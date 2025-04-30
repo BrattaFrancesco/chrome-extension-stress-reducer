@@ -98,15 +98,13 @@ if(body){
                     const text = el.textContent;
 
                     const doc = nlp(text);
-                    const people = doc.people().out('array');
-                    const orgs = doc.organizations().out('array');
-
+                    const topics = doc.topics().out("array");
+                    console.log(topics)
                     let highlighted = text;
-                    [...people, ...orgs].forEach(word => {
+                    topics.forEach(word => {
                     highlighted = highlighted.replace(new RegExp(`\\b${word}\\b`, 'gi'), 
                                                     `<mark>${word}</mark>`);
                     });
-                    console.log(text)
                     el.innerHTML = highlighted;
                 });
                 el.appendChild(btn);
