@@ -54,25 +54,43 @@ if(body){
         toggled = !toggled;
         img.src = toggled ? chrome.runtime.getURL("images/x.svg") : chrome.runtime.getURL("images/highlighter.svg");;    
         // Find all text-containing elements (you can refine this selector)
-        if(toggled){
-            const elements = document.querySelectorAll('p');
+        const elements = document.querySelectorAll('p');
 
-            elements.forEach(el => {
-                // Avoid adding multiple buttons
-                const oldBtn = el.querySelector('.my-extension-button')
-                if (oldBtn) {
-                    oldBtn.remove();
-                    return
-                };
+        elements.forEach(el => {
+            // Avoid adding multiple buttons
+            const oldBtn = el.querySelector('.my-extension-button')
+            if (oldBtn) {
+                oldBtn.remove();
+                return
+            };
 
+            if(toggled){
                 const btn = document.createElement('button');
-                btn.textContent = 'Action';
                 btn.className = 'my-extension-button';
                 btn.style.cssText = `
-                    marginLeft: 10px;
-                    padding: 3px 8px;
-                    fontSize: 0.8em;
+                    width: 38px;
+                    height: 38px;
+                    display: flex;
+                    flex-direction: row;
+                    column-gap: 8px;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 8px;
+                    border-top-left-radius: 100%;
+                    border-top-right-radius: 100%;
+                    border-bottom-right-radius: 100%;
+                    border-bottom-left-radius: 100%;
+                    background-color: rgba(226, 226, 226, 1.00);
+                    border: 0px solid rgba(50, 46, 46, 1);
                 `;
+                const img = document.createElement("img");
+                img.src = chrome.runtime.getURL("images/highlighter.svg");
+                img.style.cssText = `
+                    width: 100%;
+                    height: 100%;
+                    objectFit: contain;
+                `;
+                btn.appendChild(img);
 
                 // Your specific behavior here
                 btn.addEventListener('click', (e) => {
@@ -85,14 +103,15 @@ if(body){
 
                     let highlighted = text;
                     [...people, ...orgs].forEach(word => {
-                    highlighted = highlighted.replace(new RegExp(`\\b${word}\\b`, 'g'), 
+                    highlighted = highlighted.replace(new RegExp(`\\b${word}\\b`, 'gi'), 
                                                     `<mark>${word}</mark>`);
                     });
+                    console.log(text)
                     el.innerHTML = highlighted;
                 });
                 el.appendChild(btn);
-            });
-        }
+            }
+        });
     });
     
     body.appendChild(container)

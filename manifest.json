@@ -9,7 +9,7 @@
     
     "content_scripts": [
         {
-            "js": ["libs/compromise.js", "scripts/content.js"],
+            "js": ["libs/compromise.js", "scripts/highlighter.js"],
             "matches": [
                 "https://www.theguardian.com/*"
             ]
