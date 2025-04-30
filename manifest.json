@@ -1,0 +1,31 @@
+{
+    "manifest_version" : 3,
+    "name" : "chrome-extension-stress-reducer",
+    "version" : "1.0",
+    "description": "Reduce stress during web browsing for individuals with neurodivergent conditions and cognitive disabilities",
+
+    "icons": {
+    },
+    
+    "content_scripts": [
+        {
+            "js": ["libs/compromise.js", "scripts/content.js"],
+            "matches": [
+                "https://www.theguardian.com/*"
+            ]
+        }
+    ],
+
+    "web_accessible_resources": [
+        {
+            "matches": [
+                "https://www.theguardian.com/*"
+            ],
+            "resources": [
+                "images/highlighter.svg",
+                "images/x.svg"
+            ]
+        }
+    ]
+
+}

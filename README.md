@@ -1,2 +1,2 @@
 # chrome-extension-stress-reducer
-This is a Chrome extension developed for my Master Thesis. Its purpose is to reduce the stress during the use of web pages by people with neurodivergences and cognitive disabilities.
+This Chrome extension was developed as part of my Master's thesis to reduce stress during web browsing for individuals with neurodivergent conditions and cognitive disabilities.
