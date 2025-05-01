@@ -1,3 +1,25 @@
+function extractKeyWords(text){
+    const doc = nlp(text);
+    const topics = doc.topics().out("array");
+
+    return topics
+}
+
+function highlightHtml(text, wordsToHighlight){
+    let highlighted = text;
+    wordsToHighlight.forEach(word => {
+        //remove special char from start and end
+        word = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+                    .replace(/^[.,*+?^${}()|[\]\\]+/, '')
+                    .replace(/[.,*+?^${}()|[\]\\]+$/, '');
+        console.log(word)
+        highlighted = highlighted.replace(new RegExp(`${word}`, 'gi'), 
+                                        `<mark>${word}</mark>`);
+        });
+
+    return highlighted
+}
+
 const body = document.querySelector("body");
 
 if(body){
@@ -49,11 +71,10 @@ if(body){
     container.appendChild(button);
 
     let toggled = false;
-    // Optionally, add click handler
     button.addEventListener("click", () => {
         toggled = !toggled;
         img.src = toggled ? chrome.runtime.getURL("images/x.svg") : chrome.runtime.getURL("images/highlighter.svg");;    
-        // Find all text-containing elements (you can refine this selector)
+        // Find all text-containing elements, in this case just paragraph
         const elements = document.querySelectorAll('p');
 
         elements.forEach(el => {
@@ -92,20 +113,19 @@ if(body){
                 `;
                 btn.appendChild(img);
 
-                // Your specific behavior here
+                // Highilgh single piece of text
                 btn.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    const text = el.textContent;
+                    const text = el.innerText;
+                    console.log("text:", text)
+                    
+                    const topics = extractKeyWords(text);
+                    console.log("topics:", topics)
 
-                    const doc = nlp(text);
-                    const topics = doc.topics().out("array");
-                    console.log(topics)
-                    let highlighted = text;
-                    topics.forEach(word => {
-                    highlighted = highlighted.replace(new RegExp(`\\b${word}\\b`, 'gi'), 
-                                                    `<mark>${word}</mark>`);
-                    });
-                    el.innerHTML = highlighted;
+                    const highlighted = highlightHtml(el.innerHTML, topics)
+                    console.log("highlighted:", highlighted)
+
+                    el.innerHTML = highlighted
                 });
                 el.appendChild(btn);
             }

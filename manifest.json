@@ -9,7 +9,10 @@
     
     "content_scripts": [
         {
-            "js": ["libs/compromise.js", "scripts/highlighter.js"],
+            "js": [
+                "libs/compromise.js", 
+                "scripts/highlighter.js"
+            ],
             "matches": [
                 "https://www.theguardian.com/*"
             ]
@@ -18,12 +21,12 @@
 
     "web_accessible_resources": [
         {
-            "matches": [
-                "https://www.theguardian.com/*"
-            ],
             "resources": [
                 "images/highlighter.svg",
                 "images/x.svg"
+            ],
+            "matches": [
+                "https://www.theguardian.com/*"
             ]
         }
     ]
