@@ -1,12 +1,19 @@
 function extractKeyWords(text){
     const doc = nlp(text);
-    const topics = doc.topics().out("array");
+    const topics = doc.topics().out('array');
+    const numbers = doc.numbers().out('array')
+    const acronyms = doc.acronyms().out('array'); 
+    const hyphenated = doc.hyphenated().out('array');
+    const emails = doc.emails().out('array');
+    const phoneNumbers = doc.phoneNumbers().out('array');
 
-    return topics
+    const out = [...topics, ...numbers, ...acronyms, ...hyphenated, ...emails, ...phoneNumbers]
+    console.log(out)
+    return out
 }
 
-function highlightHtml(text, wordsToHighlight){
-    let highlighted = text;
+function highlightHtml(html, wordsToHighlight){
+    let highlighted = html;
     wordsToHighlight.forEach(word => {
         //remove special char from start and end
         word = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
@@ -19,31 +26,7 @@ function highlightHtml(text, wordsToHighlight){
     return highlighted
 }
 
-const body = document.querySelector("body");
-
-if(body){
-    // Create container div
-    const container = document.createElement("div");
-    container.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 9999;
-        width: 240px;
-        height: 48px;
-        background-color: rgba(50, 46, 46, 0.85);
-        display: flex;
-        flex-direction: row;
-        column-gap: 16px;
-        align-items: center;
-        justify-content: center;
-        padding: 16px;
-        border-radius: 100px;
-        margin-top: 8px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    `;
-
+function createHighligherButton(document){
     // Create the button
     const button = document.createElement("button");
     button.style.cssText = `
@@ -65,9 +48,8 @@ if(body){
         objectFit: contain;
     `;
 
-    // Append image to button, button to container, and container to body
+    // Append image to button
     button.appendChild(img);
-    container.appendChild(button);
 
     let toggled = false;
     button.addEventListener("click", () => {
@@ -115,12 +97,12 @@ if(body){
                 // Highilgh single piece of text
                 btn.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    e.preventDefault();
+                    
                     const text = el.textContent;
                     
-                    const topics = extractKeyWords(text);
+                    const toHighlight = extractKeyWords(text);
 
-                    const highlighted = highlightHtml(el.innerHTML, topics);
+                    const highlighted = highlightHtml(el.innerHTML, toHighlight);
 
                     el.innerHTML = highlighted;
                     el.removeChild(el.querySelector('.highlight-text'));
@@ -131,5 +113,5 @@ if(body){
         });
     });
     
-    body.appendChild(container)
+    return button
 }

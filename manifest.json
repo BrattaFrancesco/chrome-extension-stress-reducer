@@ -10,11 +10,13 @@
     "content_scripts": [
         {
             "js": [
-                "libs/compromise.js", 
-                "scripts/highlighter.js"
+                "libs/compromise.js",
+                "scripts/highlighter.js",
+                "scripts/floating-menu.js"
             ],
             "matches": [
-                "https://www.theguardian.com/*"
+                "https://www.theguardian.com/*",
+                "https://stackoverflow.com/*"
             ]
         }
     ],
@@ -26,7 +28,8 @@
                 "images/x.svg"
             ],
             "matches": [
-                "https://www.theguardian.com/*"
+                "https://www.theguardian.com/*",
+                "https://stackoverflow.com/*"
             ]
         }
     ]
