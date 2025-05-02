@@ -12,7 +12,6 @@ function highlightHtml(text, wordsToHighlight){
         word = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
                     .replace(/^[.,*+?^${}()|[\]\\]+/, '')
                     .replace(/[.,*+?^${}()|[\]\\]+$/, '');
-        console.log(word)
         highlighted = highlighted.replace(new RegExp(`${word}`, 'gi'), 
                                         `<mark>${word}</mark>`);
         });
@@ -79,15 +78,15 @@ if(body){
 
         elements.forEach(el => {
             // Avoid adding multiple buttons
-            const oldBtn = el.querySelector('.my-extension-button')
+            const oldBtn = el.querySelector('.highlight-text')
             if (oldBtn) {
                 oldBtn.remove();
                 return
             };
 
-            if(toggled){
+            if(toggled && el.getAttribute('text-highlighted') === null){
                 const btn = document.createElement('button');
-                btn.className = 'my-extension-button';
+                btn.className = 'highlight-text';
                 btn.style.cssText = `
                     width: 38px;
                     height: 38px;
@@ -116,16 +115,16 @@ if(body){
                 // Highilgh single piece of text
                 btn.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    const text = el.innerText;
-                    console.log("text:", text)
+                    e.preventDefault();
+                    const text = el.textContent;
                     
                     const topics = extractKeyWords(text);
-                    console.log("topics:", topics)
 
-                    const highlighted = highlightHtml(el.innerHTML, topics)
-                    console.log("highlighted:", highlighted)
+                    const highlighted = highlightHtml(el.innerHTML, topics);
 
-                    el.innerHTML = highlighted
+                    el.innerHTML = highlighted;
+                    el.removeChild(el.querySelector('.highlight-text'));
+                    el.setAttribute('text-highlighted', 'true');
                 });
                 el.appendChild(btn);
             }
