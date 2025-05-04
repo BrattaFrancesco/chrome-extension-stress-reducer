@@ -1,3 +1,29 @@
+function restorePosition(element){
+    const savedPosition = JSON.parse(localStorage.getItem("floatingMenuPosition"));
+    if (savedPosition) {
+        element.style.left = savedPosition.left;
+        element.style.top = savedPosition.top;
+        element.style.transform = `translate(0, 0)`;
+
+        // Restore layout
+        if (savedPosition.layout === "column") {
+            element.style.flexDirection = "column";
+            element.style.height = "auto";
+            element.style.width = "auto";
+        } else {
+            element.style.flexDirection = "row";
+            element.style.height = "auto";
+            element.style.width = "auto";
+            element.style.padding = "6px";
+        }
+    } else {
+        // Default position & layout
+        element.style.left = "50%";
+        element.style.transform = "translateX(-50%)";
+        element.style.flexDirection = "row";
+    }
+}
+
 const body = document.querySelector("body");
 
 if (body) {
@@ -8,79 +34,74 @@ if (body) {
     const floatingMenu = document.createElement("div");
     floatingMenu.style.cssText = `
         position: fixed;
-        padding: 8px;
         z-index: 9999;
         background-color: rgba(50, 46, 46, 0.85);
         display: flex;
-        flex-direction: row;
-        column-gap: 16px;
+        column-gap: 8px;
         align-items: center;
         justify-content: center;
         border-radius: 100px;
         margin: 8px;
         box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     `;
-    const savedPosition = JSON.parse(localStorage.getItem("floatingMenuPosition"));
-    if (savedPosition) {
-        floatingMenu.style.left = savedPosition.left;
-        floatingMenu.style.top = savedPosition.top;
-        floatingMenu.style.transform = `translate(0, 0)`;
+    restorePosition(floatingMenu);
 
-        // Restore layout
-        if (savedPosition.layout === "column") {
-            floatingMenu.style.flexDirection = "column";
-            floatingMenu.style.height = "auto";
-            floatingMenu.style.padding = "8px 0";
-        } else {
-            floatingMenu.style.flexDirection = "row";
-            floatingMenu.style.height = "48px";
-            floatingMenu.style.padding = "0";
-        }
-    } else {
-        // Default position & layout
-        floatingMenu.style.left = "50%";
-        floatingMenu.style.top = "0";
-        floatingMenu.style.transform = "translateX(-50%)";
-        floatingMenu.style.flexDirection = "row";
-    }
+    const controlsContainer = document.createElement("div");
+    controlsContainer.style.height = "auto";
+    controlsContainer.style.width = "auto";
+    controlsContainer.style.display = "flex";
+    controlsContainer.style.flexDirection = "column";
+    controlsContainer.style.alignItems = "center";
+    controlsContainer.style.justifyContent = "center"; // Vertically center items in container
 
     // Create drag handle
     const dragHandle = document.createElement("div");
-    dragHandle.textContent = "☰";
     dragHandle.style.cssText = `
         cursor: move;
-        padding: 0 12px;
-        user-select: none;
-        font-size: 18px;
-        color: white;
     `;
-    floatingMenu.appendChild(dragHandle);
+    const dragImg = document.createElement("img");
+    dragImg.src = chrome.runtime.getURL("images/drag_indicator_white.svg");
+    dragImg.style.cssText = `
+        width: 100%;
+        height: 100%;
+        objectFit: contain;
+    `;
+    dragImg.alt = 'icon';
+    dragHandle.appendChild(dragImg);
+    controlsContainer.appendChild(dragHandle);
+
+    // Reset button
+    const resetButton = document.createElement("button");
+    resetButton.style.cssText = `
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+        background: transparent;
+        border: none;
+    `;
+    const resetImg = document.createElement("img");
+    resetImg.src = chrome.runtime.getURL("images/settings_backup_restore_white.svg");
+    resetImg.style.cssText = `
+        width: 100%;
+        height: 100%;
+        objectFit: contain;
+    `;
+    resetImg.alt = 'icon';
+    resetButton.appendChild(resetImg);
+
+    resetButton.addEventListener("click", () => {
+        localStorage.removeItem("floatingMenuPosition");
+        floatingMenu.style.left = "50%";
+        floatingMenu.style.transform = "translateX(-50%)";
+        floatingMenu.style.flexDirection = "row";
+    });
+    controlsContainer.appendChild(resetButton);
+
+    floatingMenu.appendChild(controlsContainer);
 
     // Create and append button
     const highligherButton = createHighligherButton(document);
     floatingMenu.appendChild(highligherButton);
-    const resetButton = document.createElement("button");
-    resetButton.textContent = "Reset";
-    resetButton.style.cssText = `
-        padding: 4px 8px;
-        font-size: 14px;
-        background-color: #444;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-    `;
-    resetButton.addEventListener("click", () => {
-        localStorage.removeItem("floatingMenuPosition");
-        floatingMenu.style.left = "50%";
-        floatingMenu.style.top = "0";
-        floatingMenu.style.transform = "translateX(-50%)";
-        floatingMenu.style.flexDirection = "row";
-        floatingMenu.style.height = "48px";
-        floatingMenu.style.padding = "0";
-    });
-    floatingMenu.appendChild(resetButton);
-
 
     sRoot.shadowRoot?.appendChild(floatingMenu);
     body.appendChild(sRoot);
@@ -122,12 +143,8 @@ if (body) {
         // Switch to vertical layout near edges
         if (x < edgeThreshold || x > viewportWidth - menuWidth - edgeThreshold) {
             floatingMenu.style.flexDirection = "column";
-            floatingMenu.style.height = "auto"; // Allow it to grow
-            floatingMenu.style.padding = "8px 0";
         } else {
             floatingMenu.style.flexDirection = "row";
-            floatingMenu.style.height = "48px"; // Restore original height
-            floatingMenu.style.padding = "0";   // Remove vertical padding
         }
     }
     
@@ -171,12 +188,8 @@ if (body) {
 
         if (x < edgeThreshold || x > viewportWidth - menuWidth - edgeThreshold) {
             floatingMenu.style.flexDirection = "column";
-            floatingMenu.style.height = "auto";
-            floatingMenu.style.padding = "8px 0";
         } else {
             floatingMenu.style.flexDirection = "row";
-            floatingMenu.style.height = "48px";
-            floatingMenu.style.padding = "0";
         }
     });
     
