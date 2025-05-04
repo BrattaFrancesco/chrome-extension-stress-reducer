@@ -14,38 +14,17 @@ function restorePosition(element){
             element.style.flexDirection = "row";
             element.style.height = "auto";
             element.style.width = "auto";
-            element.style.padding = "6px";
         }
     } else {
         // Default position & layout
+        element.style.top = "0";
         element.style.left = "50%";
         element.style.transform = "translateX(-50%)";
         element.style.flexDirection = "row";
     }
 }
 
-const body = document.querySelector("body");
-
-if (body) {
-    const sRoot = document.createElement("div");
-    sRoot.attachShadow({ mode: "open" });
-
-    // Create container div
-    const floatingMenu = document.createElement("div");
-    floatingMenu.style.cssText = `
-        position: fixed;
-        z-index: 9999;
-        background-color: rgba(50, 46, 46, 0.85);
-        display: flex;
-        column-gap: 8px;
-        align-items: center;
-        justify-content: center;
-        border-radius: 100px;
-        margin: 8px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    `;
-    restorePosition(floatingMenu);
-
+function createControlsContainer(document, floatingMenu){
     const controlsContainer = document.createElement("div");
     controlsContainer.style.height = "auto";
     controlsContainer.style.width = "auto";
@@ -66,11 +45,12 @@ if (body) {
         height: 100%;
         objectFit: contain;
     `;
+    dragImg.addEventListener('dragstart', e => e.preventDefault());
     dragImg.alt = 'icon';
     dragHandle.appendChild(dragImg);
     controlsContainer.appendChild(dragHandle);
 
-    // Reset button
+    /* // Reset button
     const resetButton = document.createElement("button");
     resetButton.style.cssText = `
         width: 100%;
@@ -95,16 +75,7 @@ if (body) {
         floatingMenu.style.transform = "translateX(-50%)";
         floatingMenu.style.flexDirection = "row";
     });
-    controlsContainer.appendChild(resetButton);
-
-    floatingMenu.appendChild(controlsContainer);
-
-    // Create and append button
-    const highligherButton = createHighligherButton(document);
-    floatingMenu.appendChild(highligherButton);
-
-    sRoot.shadowRoot?.appendChild(floatingMenu);
-    body.appendChild(sRoot);
+    controlsContainer.appendChild(resetButton); */
 
     // Drag logic (attached only to the drag handle)
     let isDragging = false;
@@ -138,7 +109,7 @@ if (body) {
         floatingMenu.style.top = `${y}px`;
         floatingMenu.style.transform = `translate(0, 0)`; // Reset transform to absolute positioning
 
-        const edgeThreshold = 32; // pixels from left/right edge
+        const edgeThreshold = 64; // pixels from left/right edge
 
         // Switch to vertical layout near edges
         if (x < edgeThreshold || x > viewportWidth - menuWidth - edgeThreshold) {
@@ -167,7 +138,44 @@ if (body) {
             layout: isVertical ? "column" : "row"
         }));
     }
+    return controlsContainer
+}
 
+const body = document.querySelector("body");
+
+if (body) {
+    const sRoot = document.createElement("div");
+    sRoot.attachShadow({ mode: "open" });
+
+    // Create container div
+    const floatingMenu = document.createElement("div");
+    floatingMenu.style.cssText = `
+        position: fixed;
+        z-index: 9999;
+        background-color: rgba(50, 46, 46, 0.85);
+        display: flex;
+        column-gap: 8px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 100px;
+        margin: 8px;
+        padding: 6px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        transition: 
+            top 0.3s ease, 
+            left 0.3s ease, 
+            height 0.3s ease,
+            padding 0.3s ease,
+            flex-direction 0.3s ease;
+        will-change: top, left, height, flex-direction;
+    `;
+    restorePosition(floatingMenu);
+
+    const controlsContainer = createControlsContainer(document, floatingMenu);
+
+    floatingMenu.appendChild(controlsContainer);
+
+    // When resize the window bring the menu in the new limits
     window.addEventListener("resize", () => {
         const menuRect = floatingMenu.getBoundingClientRect();
         const menuWidth = menuRect.width;
@@ -186,11 +194,21 @@ if (body) {
         floatingMenu.style.top = `${y}px`;
         floatingMenu.style.transform = `translate(0, 0)`;
 
+        const edgeThreshold = 64;
+
         if (x < edgeThreshold || x > viewportWidth - menuWidth - edgeThreshold) {
             floatingMenu.style.flexDirection = "column";
         } else {
             floatingMenu.style.flexDirection = "row";
         }
     });
-    
+
+    // Create and append buttons
+    const highligherButton = createHighligherButton(document);
+    floatingMenu.appendChild(highligherButton);
+    /* More buttons here
+    *
+    */
+    sRoot.shadowRoot?.appendChild(floatingMenu);
+    body.appendChild(sRoot);
 }
