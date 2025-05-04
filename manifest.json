@@ -16,7 +16,8 @@
             ],
             "matches": [
                 "https://www.theguardian.com/*",
-                "https://stackoverflow.com/*"
+                "https://stackoverflow.com/*",
+                "https://www.reddit.com/*"
             ]
         }
     ],
@@ -29,7 +30,8 @@
             ],
             "matches": [
                 "https://www.theguardian.com/*",
-                "https://stackoverflow.com/*"
+                "https://stackoverflow.com/*",
+                "https://www.reddit.com/*"
             ]
         }
     ]

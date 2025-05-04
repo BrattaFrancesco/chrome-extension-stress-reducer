@@ -1,9 +1,12 @@
 const body = document.querySelector("body");
 
 if(body){
+    const sRoot = document.createElement('div');
+    sRoot.attachShadow({mode: "open"});
+
     // Create container div
-    const container = document.createElement("div");
-    container.style.cssText = `
+    const floatingMenu = document.createElement("div");
+    floatingMenu.style.cssText = `
         position: fixed;
         top: 0;
         left: 50%;
@@ -17,7 +20,6 @@ if(body){
         column-gap: 16px;
         align-items: center;
         justify-content: center;
-        padding: 16px;
         border-radius: 100px;
         margin-top: 8px;
         box-shadow: 0 4px 8px rgba(0,0,0,0.2);
@@ -25,7 +27,9 @@ if(body){
 
     // Create and append button
     highligherButton = createHighligherButton(document);
-    container.appendChild(highligherButton);
+    floatingMenu.appendChild(highligherButton);
 
-    body.appendChild(container);
+    sRoot.shadowRoot?.appendChild(floatingMenu);
+
+    body.appendChild(sRoot);
 }

@@ -19,7 +19,7 @@ function highlightHtml(html, wordsToHighlight){
         word = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
                     .replace(/^[.,*+?^${}()|[\]\\]+/, '')
                     .replace(/[.,*+?^${}()|[\]\\]+$/, '');
-        highlighted = highlighted.replace(new RegExp(`${word}`, 'gi'), 
+        highlighted = highlighted.replace(new RegExp(`\\b${word}\\b`, 'gi'), 
                                         `<mark>${word}</mark>`);
         });
 
@@ -77,7 +77,7 @@ function createHighligherButton(document){
                     column-gap: 8px;
                     align-items: center;
                     justify-content: center;
-                    padding: 8px;
+                    padding: 8px !important;
                     border-top-left-radius: 100%;
                     border-top-right-radius: 100%;
                     border-bottom-right-radius: 100%;
