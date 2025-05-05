@@ -58,7 +58,7 @@ function createSingleParagraphHighligherButton(document){
         toggled = !toggled;
         img.src = toggled ? chrome.runtime.getURL("images/x.svg") : chrome.runtime.getURL("images/highlighter.svg");;    
         // Find all text-containing elements, in this case just paragraph
-        const elements = document.querySelectorAll('p');
+        const elements = document.querySelectorAll('p', 'span');
 
         elements.forEach(el => {
             const sRoot = document.createElement("div");
@@ -152,10 +152,10 @@ function createAllParagraphHighlighterButton(document){
 
     button.addEventListener("click", () => {   
         // Find all text-containing elements, in this case just paragraph
-        const elements = document.querySelectorAll('p');
+        const elements = document.querySelectorAll('p', 'span');
 
         elements.forEach(el => {
-            if(toggled && el.getAttribute('text-highlighted') === null){
+            if(el.getAttribute('text-highlighted') === null){
                 const text = el.textContent;
                     
                 const toHighlight = extractKeyWords(text);
