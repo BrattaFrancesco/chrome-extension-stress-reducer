@@ -47,6 +47,8 @@ function createHighligherButton(document){
         height: 100%;
         objectFit: contain;
     `;
+    img.addEventListener('dragstart', e => e.preventDefault());
+    img.alt = "icon";
 
     // Append image to button
     button.appendChild(img);
@@ -59,6 +61,10 @@ function createHighligherButton(document){
         const elements = document.querySelectorAll('p');
 
         elements.forEach(el => {
+            const sRoot = document.createElement("div");
+            sRoot.className = 'highlight-text';
+            sRoot.attachShadow({ mode: "open" });
+            
             // Avoid adding multiple buttons
             const oldBtn = el.querySelector('.highlight-text')
             if (oldBtn) {
@@ -68,7 +74,6 @@ function createHighligherButton(document){
 
             if(toggled && el.getAttribute('text-highlighted') === null){
                 const btn = document.createElement('button');
-                btn.className = 'highlight-text';
                 btn.style.cssText = `
                     width: 38px;
                     height: 38px;
@@ -108,7 +113,9 @@ function createHighligherButton(document){
                     el.removeChild(el.querySelector('.highlight-text'));
                     el.setAttribute('text-highlighted', 'true');
                 });
-                el.appendChild(btn);
+
+                sRoot.shadowRoot?.appendChild(btn);
+                el.appendChild(sRoot);
             }
         });
     });
