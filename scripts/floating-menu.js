@@ -155,6 +155,7 @@ if (body) {
         background-color: rgba(50, 46, 46, 0.85);
         display: flex;
         column-gap: 8px;
+        row-gap: 8px;
         align-items: center;
         justify-content: center;
         border-radius: 100px;
@@ -204,8 +205,11 @@ if (body) {
     });
 
     // Create and append buttons
-    const highligherButton = createHighligherButton(document);
-    floatingMenu.appendChild(highligherButton);
+    const singleParagraphHighligherButton = createSingleParagraphHighligherButton(document);
+    floatingMenu.appendChild(singleParagraphHighligherButton);
+    
+    const allParagraphHighlighterButton = createAllParagraphHighlighterButton(document);
+    floatingMenu.appendChild(allParagraphHighlighterButton)
     /* More buttons here
     *
     */
