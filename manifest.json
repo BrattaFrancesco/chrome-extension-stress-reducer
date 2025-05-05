@@ -16,6 +16,7 @@
             ],
             "js": [
                 "libs/compromise.js",
+                "scripts/layout-simplifier.js",
                 "scripts/highlighter.js",
                 "scripts/floating-menu.js"
             ]
