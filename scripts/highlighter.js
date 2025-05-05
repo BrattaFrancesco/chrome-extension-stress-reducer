@@ -26,7 +26,7 @@ function highlightHtml(html, wordsToHighlight){
     return highlighted
 }
 
-function createHighligherButton(document){
+function createSingleParagraphHighligherButton(document){
     // Create the button
     const button = document.createElement("button");
     button.style.cssText = `
@@ -58,7 +58,7 @@ function createHighligherButton(document){
         toggled = !toggled;
         img.src = toggled ? chrome.runtime.getURL("images/x.svg") : chrome.runtime.getURL("images/highlighter.svg");;    
         // Find all text-containing elements, in this case just paragraph
-        const elements = document.querySelectorAll('p');
+        const elements = document.querySelectorAll('p', 'span');
 
         elements.forEach(el => {
             const sRoot = document.createElement("div");
@@ -116,6 +116,54 @@ function createHighligherButton(document){
 
                 sRoot.shadowRoot?.appendChild(btn);
                 el.appendChild(sRoot);
+            }
+        });
+    });
+    
+    return button
+}
+
+function createAllParagraphHighlighterButton(document){
+    // Create the button
+    const button = document.createElement("button");
+    button.style.cssText = `
+        width: 38px;
+        height: 38px;
+        background-color: rgba(226, 226, 226, 1.00);
+        padding: 8;
+        border-radius: 100px;
+        border: none;
+        cursor: pointer;
+    `;
+
+    // Create the image inside the button
+    const img = document.createElement("img");
+    img.src = chrome.runtime.getURL("images/all_highlighter.svg");
+    img.style.cssText = `
+        width: 100%;
+        height: 100%;
+        objectFit: contain;
+    `;
+    img.addEventListener('dragstart', e => e.preventDefault());
+    img.alt = "icon";
+
+    // Append image to button
+    button.appendChild(img);
+
+    button.addEventListener("click", () => {   
+        // Find all text-containing elements, in this case just paragraph
+        const elements = document.querySelectorAll('p', 'span');
+
+        elements.forEach(el => {
+            if(el.getAttribute('text-highlighted') === null){
+                const text = el.textContent;
+                    
+                const toHighlight = extractKeyWords(text);
+
+                const highlighted = highlightHtml(el.innerHTML, toHighlight);
+
+                el.innerHTML = highlighted;
+                el.setAttribute('text-highlighted', 'true');
             }
         });
     });
