@@ -31,13 +31,15 @@ function createHideElementButton(document){
         img.src = toggled ? chrome.runtime.getURL("images/x.svg") : chrome.runtime.getURL("images/visibility_off.svg");;    
         
         let lastElement = null;
-        let lastRemoved = null;
 
         const blurStyle = '2px';
         const originalOutline = new WeakMap();
 
         function isExcluded(el) {
-            return el.closest("#sRoot-floating-menu") !== null || el === document.body || el === document.documentElement;
+            return el.closest("#sRoot-floating-menu") !== null 
+                   || el.closest("#restore-button") 
+                   || el === document.body 
+                   || el === document.documentElement;
         }
 
         function onMouseOver(e) {
@@ -64,6 +66,42 @@ function createHideElementButton(document){
             el.style.outline = originalOutline.get(el) || '';
         }
 
+        function createRestoreButton(originalEl) {
+            originalEl.style.filter = '';
+            originalEl.style.outline = originalOutline.get(originalEl) || '';
+
+            const placeholder = document.createElement('button');
+            placeholder.id = 'restore-button';
+            placeholder.style.height = '24px';
+            placeholder.style.width = '24px';
+            placeholder.style.border = 'none';
+            placeholder.style.borderRadius = '100%';
+            placeholder.style.backgroundColor = 'rgba(226, 226, 226, 1.00)';
+            placeholder.style.cursor = 'pointer';
+
+            // Create the image inside the button
+            const placeholderImg = document.createElement("img");
+            placeholderImg.src = chrome.runtime.getURL("images/expand_content.svg");
+            placeholderImg.style.cssText = `
+                width: 100%;
+                height: 100%;
+                objectFit: contain;
+            `;
+            placeholderImg.addEventListener('dragstart', e => e.preventDefault());
+            placeholderImg.alt = "icon";
+
+            // Append image to button
+            placeholder.appendChild(placeholderImg);
+        
+            placeholder.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                placeholder.replaceWith(originalEl);
+            });
+        
+            return placeholder;
+        }
+
         function onClick(e) {
             e.preventDefault();
             e.stopPropagation();
@@ -84,13 +122,8 @@ function createHideElementButton(document){
             }
             if(isExcluded(el)) return;
 
-            lastRemoved = {
-                element: el,
-                parent: el.parentNode,
-                nextSibling: el.nextSibling
-            };
-
-            el.remove(); // This removes the element from the DOM
+            const restoreButton = createRestoreButton(el);
+            el.replaceWith(restoreButton);
         }
 
         function onKeyDown(e) {
