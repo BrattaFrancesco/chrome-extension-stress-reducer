@@ -1,4 +1,4 @@
-function createHideElementButton(document){
+function createRemoveElementsButton(document){
     // Create the button
     const button = document.createElement("button");
     button.style.cssText = `
