@@ -144,7 +144,7 @@ function createHideElementsButton(document){
 
     // Create the image inside the button
     const img = document.createElement("img");
-    img.src = chrome.runtime.getURL("images/visibility_off.svg");
+    img.src = chrome.runtime.getURL("images/collapse_elements.svg");
     img.style.cssText = `
         width: 100%;
         height: 100%;
@@ -159,7 +159,7 @@ function createHideElementsButton(document){
     let toggled = false;
     button.addEventListener("click", () => {
         toggled = !toggled;
-        img.src = toggled ? chrome.runtime.getURL("images/x.svg") : chrome.runtime.getURL("images/visibility_off.svg");;    
+        img.src = toggled ? chrome.runtime.getURL("images/x.svg") : chrome.runtime.getURL("images/collapse_elements.svg");;    
         
         let lastElement = null;
 
@@ -249,7 +249,7 @@ function createHideElementsButton(document){
                     lastElement.style.filter = '';
                     lastElement.style.outline = '';
                 }
-                img.src = chrome.runtime.getURL("images/visibility_off.svg");
+                img.src = chrome.runtime.getURL("images/collapse_elements.svg");
                 return
             }
             if(isExcluded(el)) return;
@@ -269,7 +269,7 @@ function createHideElementsButton(document){
                     lastElement.style.filter = '';
                     lastElement.style.outline = '';
                 }
-                img.src = chrome.runtime.getURL("images/visibility_off.svg");
+                img.src = chrome.runtime.getURL("images/collapse_elements.svg");
                 return
             }
           }
