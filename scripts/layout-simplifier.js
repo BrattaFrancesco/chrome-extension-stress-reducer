@@ -201,6 +201,9 @@ function createHideElementsButton(document){
             originalEl.style.filter = '';
             originalEl.style.outline = originalOutline.get(originalEl) || '';
 
+            const sRoot = document.createElement("div");
+            sRoot.attachShadow({ mode: "open" });
+
             const placeholder = document.createElement('button');
             placeholder.id = 'restore-button';
             placeholder.style.height = '24px';
@@ -227,10 +230,11 @@ function createHideElementsButton(document){
             placeholder.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                placeholder.replaceWith(originalEl);
+                sRoot.replaceWith(originalEl);
             });
         
-            return placeholder;
+            sRoot.shadowRoot?.appendChild(placeholder);
+            return sRoot;
         }
 
         function onClick(e) {
