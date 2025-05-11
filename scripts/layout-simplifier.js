@@ -113,6 +113,7 @@ function createHideElementButton(document){
                 document.removeEventListener('mouseout', onMouseOut, true);
                 document.removeEventListener('click', onClick, true);
                 document.addEventListener('keydown', onKeyDown, true);
+
                 if (lastElement) {
                     lastElement.style.filter = '';
                     lastElement.style.outline = '';
@@ -127,14 +128,7 @@ function createHideElementButton(document){
         }
 
         function onKeyDown(e) {
-            if (e.ctrlKey && e.key === 'z') {
-              if (lastRemoved && lastRemoved.parent) {
-                const { element, parent, nextSibling } = lastRemoved;
-                parent.insertBefore(element, nextSibling);
-                console.log('Undo: Element restored.', element);
-                lastRemoved = null;
-              }
-            } else if(e.key === 'Escape') {
+            if(e.key === 'Escape') {
                 toggled = !toggled;
                 document.removeEventListener('mouseover', onMouseOver, true);
                 document.removeEventListener('mouseout', onMouseOut, true);

@@ -212,8 +212,6 @@ if (body) {
     const allParagraphHighlighterButton = createAllParagraphHighlighterButton(document);
     floatingMenu.appendChild(allParagraphHighlighterButton);
 
-    const hideElementButton = createHideElementButton(document);
-    floatingMenu.appendChild(hideElementButton);
     /* More buttons here
     *
     */
