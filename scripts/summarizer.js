@@ -110,9 +110,6 @@ function createTextSummarizerButton(document){
                         box-shadow: 0 4px 8px rgba(0,0,0,0.2);
                         transition: transform 0.3s ease-in-out;
                     }
-                    details[open] {
-                        transform: scale(1.05);
-                    }
                     summary {
                         font-weight: bold;
                         font-size: 1.2rem;
@@ -126,10 +123,7 @@ function createTextSummarizerButton(document){
                         color:rgba(50, 46, 46, 0.85);
                     }
                     .detail-text {
-                        font-size: 1rem;
-                        color: #333;
-                        line-height: 1.6;
-                        margin-top: 10px;
+                        color: rgba(50, 46, 46, 0.85);
                     }
                     p {
                         margin: 0;
