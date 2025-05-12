@@ -10,12 +10,11 @@
     "content_scripts": [
         {
             "matches": [
-                "https://www.theguardian.com/*",
-                "https://stackoverflow.com/*",
-                "https://www.reddit.com/*"
+                "https://*/*"
             ],
             "js": [
                 "libs/compromise.js",
+                "scripts/layout-simplifier.js",
                 "scripts/highlighter.js",
                 "scripts/floating-menu.js"
             ]
@@ -28,9 +27,7 @@
                 "images/*"
             ],
             "matches": [
-                "https://www.theguardian.com/*",
-                "https://stackoverflow.com/*",
-                "https://www.reddit.com/*"
+                "https://*/*"
             ]
         }
     ]
