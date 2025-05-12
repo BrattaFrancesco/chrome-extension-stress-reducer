@@ -75,7 +75,7 @@ function createTextSummarizerButton(document){
                 btn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     
-                    const result = summarize(el.textContent, 1, 3);
+                    const result = summarize(el.textContent, 1, 5);
                     
                     const sRootSum = document.createElement("div");
                     sRootSum.attachShadow({ mode: "open" });
