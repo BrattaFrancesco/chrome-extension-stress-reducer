@@ -140,7 +140,7 @@ function createTextSummarizerButton(document){
                     el.removeChild(el.querySelector('.summarize-text'));
                     el.setAttribute('text-summarized', 'true');
 
-                    el.style.outline = '2px dashed rgba(0, 128, 0, 0.5)';
+                    el.style.borderLeft = '2px dashed rgba(0, 128, 0, 0.5)';
                 });
 
                 sRoot.shadowRoot?.appendChild(btn);
