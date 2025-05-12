@@ -146,6 +146,7 @@ const body = document.querySelector("body");
 if (body) {
     const sRoot = document.createElement("div");
     sRoot.attachShadow({ mode: "open" });
+    sRoot.id = "sRoot-floating-menu";
 
     // Create container div
     const floatingMenu = document.createElement("div");
@@ -209,7 +210,13 @@ if (body) {
     floatingMenu.appendChild(singleParagraphHighligherButton);
     
     const allParagraphHighlighterButton = createAllParagraphHighlighterButton(document);
-    floatingMenu.appendChild(allParagraphHighlighterButton);
+    floatingMenu.appendChild(allParagraphHighlighterButton)
+
+    const hideElementButton = createHideElementsButton(document);
+    floatingMenu.appendChild(hideElementButton);
+
+    const removeElementButton = createRemoveElementsButton(document);
+    floatingMenu.appendChild(removeElementButton);
 
     const summarizerButton = createTextSummarizerButton(document);
     floatingMenu.appendChild(summarizerButton);
