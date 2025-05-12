@@ -209,7 +209,10 @@ if (body) {
     floatingMenu.appendChild(singleParagraphHighligherButton);
     
     const allParagraphHighlighterButton = createAllParagraphHighlighterButton(document);
-    floatingMenu.appendChild(allParagraphHighlighterButton)
+    floatingMenu.appendChild(allParagraphHighlighterButton);
+
+    const summarizerButton = createTextSummarizerButton(document);
+    floatingMenu.appendChild(summarizerButton);
     /* More buttons here
     *
     */

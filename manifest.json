@@ -16,7 +16,9 @@
             ],
             "js": [
                 "libs/compromise.js",
+                "libs/summary_minified.js",
                 "scripts/highlighter.js",
+                "scripts/summarizer.js",
                 "scripts/floating-menu.js"
             ]
         }
