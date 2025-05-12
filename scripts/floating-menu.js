@@ -212,11 +212,11 @@ if (body) {
     const allParagraphHighlighterButton = createAllParagraphHighlighterButton(document);
     floatingMenu.appendChild(allParagraphHighlighterButton);
 
-    const removeElementButton = createRemoveElementsButton(document);
-    floatingMenu.appendChild(removeElementButton);
-
     const hideElementButton = createHideElementsButton(document);
     floatingMenu.appendChild(hideElementButton);
+
+    const removeElementButton = createRemoveElementsButton(document);
+    floatingMenu.appendChild(removeElementButton);
     /* More buttons here
     *
     */
