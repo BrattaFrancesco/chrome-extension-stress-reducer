@@ -13,6 +13,7 @@
                 "https://*/*"
             ],
             "js": [
+                "libs/utils.js",
                 "libs/compromise.js",
                 "libs/summary_minified.js",
                 "scripts/layout-simplifier.js",

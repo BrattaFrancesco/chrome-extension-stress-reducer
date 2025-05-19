@@ -8,12 +8,13 @@ function extractKeyWords(text){
     const phoneNumbers = doc.phoneNumbers().out('array');
 
     const out = [...topics, ...numbers, ...acronyms, ...hyphenated, ...emails, ...phoneNumbers]
-    console.log(out)
     return out
 }
 
-function highlightHtml(html, wordsToHighlight){
-    let highlighted = html;
+function highlightHtml(el, wordsToHighlight){
+    let highlighted = el.innerHTML;
+    const shadowRoots = el.querySelectorAll('div[class^="s-root-"]');
+
     wordsToHighlight.forEach(word => {
         //remove special char from start and end
         word = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
@@ -22,8 +23,21 @@ function highlightHtml(html, wordsToHighlight){
         highlighted = highlighted.replace(new RegExp(`\\b${word}\\b`, 'gi'), 
                                         `<mark>${word}</mark>`);
         });
+    
+    el.innerHTML = highlighted;
 
-    return highlighted
+    // Append content of shadow roots if available
+    shadowRoots.forEach(sRoot => {
+        const clone = sRoot.cloneNode(true);
+        clone.attachShadow({ mode: "open" });
+
+        if (sRoot.shadowRoot) {
+            clone.innerHTML = sRoot.shadowRoot.innerHTML;
+        }
+        
+        el.appendChild(sRoot);
+    });
+    return el
 }
 
 function createSingleParagraphHighligherButton(document){
@@ -62,11 +76,12 @@ function createSingleParagraphHighligherButton(document){
 
         elements.forEach(el => {
             const sRoot = document.createElement("div");
-            sRoot.className = 'highlight-text';
+            sRoot.className = 's-root-highlight-text';
+            sRoot.id = "s-root-highlight-text";
             sRoot.attachShadow({ mode: "open" });
             
             // Avoid adding multiple buttons
-            const oldBtn = el.querySelector('.highlight-text')
+            const oldBtn = el.querySelector('.s-root-highlight-text')
             if (oldBtn) {
                 oldBtn.remove();
                 return
@@ -106,12 +121,15 @@ function createSingleParagraphHighligherButton(document){
                     const text = el.textContent;
                     
                     const toHighlight = extractKeyWords(text);
+                    
+                    const highlighted = highlightHtml(el, toHighlight);
 
-                    const highlighted = highlightHtml(el.innerHTML, toHighlight);
-
-                    el.innerHTML = highlighted;
-                    el.removeChild(el.querySelector('.highlight-text'));
+                    el = highlighted;
+                    
+                    removeChildByClassName(el, 's-root-highlight-text')
                     el.setAttribute('text-highlighted', 'true');
+
+                    el.style.borderLeft = '2px dashed rgba(0, 128, 0, 0.5)';
                 });
 
                 sRoot.shadowRoot?.appendChild(btn);

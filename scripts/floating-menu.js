@@ -146,7 +146,7 @@ const body = document.querySelector("body");
 if (body) {
     const sRoot = document.createElement("div");
     sRoot.attachShadow({ mode: "open" });
-    sRoot.id = "sRoot-floating-menu";
+    sRoot.id = "s-root-floating-menu";
 
     // Create container div
     const floatingMenu = document.createElement("div");

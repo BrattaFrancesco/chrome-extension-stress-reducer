@@ -34,11 +34,11 @@ function createTextSummarizerButton(document){
 
         elements.forEach(el => {
             const sRoot = document.createElement("div");
-            sRoot.className = 'summarize-text';
+            sRoot.className = 's-root-summarize-text';
             sRoot.attachShadow({ mode: "open" });
             
             // Avoid adding multiple buttons
-            const oldBtn = el.querySelector('.summarize-text')
+            const oldBtn = el.querySelector('.s-root-summarize-text')
             if (oldBtn) {
                 oldBtn.remove();
                 return
@@ -78,6 +78,7 @@ function createTextSummarizerButton(document){
                     const result = summarize(el.textContent, 1, 5);
                     
                     const sRootSum = document.createElement("div");
+                    sRootSum.className = "s-root-summarized-content"
                     sRootSum.attachShadow({ mode: "open" });
 
                     // Create details and summary elements
@@ -137,7 +138,7 @@ function createTextSummarizerButton(document){
                     sRootSum.shadowRoot?.appendChild(detail);
                     el.appendChild(sRootSum);
 
-                    el.removeChild(el.querySelector('.summarize-text'));
+                    removeChildByClassName(el, 's-root-summarize-text')
                     el.setAttribute('text-summarized', 'true');
 
                     el.style.borderLeft = '2px dashed rgba(0, 128, 0, 0.5)';
