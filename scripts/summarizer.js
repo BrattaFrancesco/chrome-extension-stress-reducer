@@ -114,7 +114,7 @@ function createTextSummarizerButton(document){
                     summary {
                         font-weight: bold;
                         font-size: 1.2rem;
-                        color:rgba(50, 46, 46, 0.85);
+                        color:rgba(0, 0, 0, 0.85);
                         cursor: pointer;
                         padding: 5px 0;
                         transition: color 0.3s;
@@ -124,7 +124,7 @@ function createTextSummarizerButton(document){
                         color:rgba(50, 46, 46, 0.85);
                     }
                     .detail-text {
-                        color: rgba(50, 46, 46, 0.85);
+                        color: rgba(0, 0, 0, 0.85);
                     }
                     p {
                         margin: 0;
