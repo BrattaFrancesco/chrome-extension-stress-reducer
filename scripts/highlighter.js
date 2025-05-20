@@ -14,7 +14,7 @@ function extractKeyWords(text){
 function highlightHtml(el, wordsToHighlight){
     let highlighted = el.innerHTML;
     const shadowRoots = el.querySelectorAll('div[class^="s-root-"]');
-
+    
     wordsToHighlight.forEach(word => {
         //remove special char from start and end
         word = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
@@ -30,7 +30,7 @@ function highlightHtml(el, wordsToHighlight){
     shadowRoots.forEach(sRoot => {
         const clone = sRoot.cloneNode(true);
         clone.attachShadow({ mode: "open" });
-
+        
         if (sRoot.shadowRoot) {
             clone.innerHTML = sRoot.shadowRoot.innerHTML;
         }
@@ -178,10 +178,11 @@ function createAllParagraphHighlighterButton(document){
                     
                 const toHighlight = extractKeyWords(text);
 
-                const highlighted = highlightHtml(el.innerHTML, toHighlight);
+                const highlighted = highlightHtml(el, toHighlight);
 
-                el.innerHTML = highlighted;
+                el = highlighted;
                 el.setAttribute('text-highlighted', 'true');
+                el.style.borderLeft = '2px dashed rgba(0, 128, 0, 0.5)';
             }
         });
     });
