@@ -37,7 +37,7 @@ function createRemoveElementsButton(document){
         const originalOutline = new WeakMap();
 
         function isExcluded(el) {
-            return el.closest("#sRoot-floating-menu") !== null || el === document.body || el === document.documentElement;
+            return el.closest("#s-root-floating-menu") !== null || el === document.body || el === document.documentElement;
         }
 
         function onMouseOver(e) {
@@ -69,7 +69,7 @@ function createRemoveElementsButton(document){
             e.stopPropagation();
 
             const el = e.target;
-            if (el.closest("#sRoot-floating-menu")) {
+            if (el.closest("#s-root-floating-menu")) {
                 toggled = !toggled;
                 document.removeEventListener('mouseover', onMouseOver, true);
                 document.removeEventListener('mouseout', onMouseOut, true);
@@ -100,7 +100,6 @@ function createRemoveElementsButton(document){
               if (lastRemoved && lastRemoved.parent) {
                 const { element, parent, nextSibling } = lastRemoved;
                 parent.insertBefore(element, nextSibling);
-                console.log('Undo: Element restored.', element);
                 lastRemoved = null;
               }
             } else if(e.key === 'Escape') {
@@ -167,7 +166,7 @@ function createHideElementsButton(document){
         const originalOutline = new WeakMap();
 
         function isExcluded(el) {
-            return el.closest("#sRoot-floating-menu") !== null 
+            return el.closest("#s-root-floating-menu") !== null 
                    || el.closest("#restore-button") 
                    || el === document.body 
                    || el === document.documentElement;
@@ -202,6 +201,7 @@ function createHideElementsButton(document){
             originalEl.style.outline = originalOutline.get(originalEl) || '';
 
             const sRoot = document.createElement("div");
+            sRoot.className = "s-root-restore-button"
             sRoot.attachShadow({ mode: "open" });
 
             const placeholder = document.createElement('button');
@@ -242,7 +242,7 @@ function createHideElementsButton(document){
             e.stopPropagation();
 
             const el = e.target;
-            if (el.closest("#sRoot-floating-menu")) {
+            if (el.closest("#s-root-floating-menu")) {
                 toggled = !toggled;
                 document.removeEventListener('mouseover', onMouseOver, true);
                 document.removeEventListener('mouseout', onMouseOut, true);
