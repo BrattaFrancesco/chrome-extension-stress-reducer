@@ -1,4 +1,71 @@
-function createLinkPreviewTooltip(document) {
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes shine-effect {
+        0% {
+            background-position: -120% 0;
+        }
+        100% {
+            background-position: 120% 0;
+        }
+    }
+    .shine-on-visible {
+        position: relative;
+        z-index: 1;
+        overflow: visible;
+        background: linear-gradient(
+            150deg,
+            rgba(255,255,255,0) 0%,
+            rgba(255,255,255,0.15) 25%,
+            rgb(255, 99, 71) 50%,
+            rgba(255,255,255,0.15) 75%,
+            rgba(255,255,255,0) 100%
+        );
+        background-size: 200% 100%;
+        background-repeat: no-repeat;
+        animation: shine-effect 1.5s linear 1;
+    }
+`;
+document.head.appendChild(style);
+
+let linkPreviewEnabled = true;
+
+function createActivateEasyNavigationButton(document){
+    // Create the button
+    const button = document.createElement("button");
+    button.style.cssText = `
+        width: 38px;
+        height: 38px;
+        background-color: rgba(226, 226, 226, 1.00);
+        padding: 8;
+        border-radius: 100px;
+        border: none;
+        cursor: pointer;
+    `;
+
+    // Create the image inside the button
+    const img = document.createElement("img");
+    img.src = chrome.runtime.getURL("images/tooltip_off.svg");
+    img.style.cssText = `
+        width: 100%;
+        height: 100%;
+        objectFit: contain;
+    `;
+    img.addEventListener('dragstart', e => e.preventDefault());
+    img.alt = "icon";
+
+    // Append image to button
+    button.appendChild(img);
+
+    button.addEventListener('click', () => {
+        linkPreviewEnabled = !linkPreviewEnabled;
+        img.src = linkPreviewEnabled ? 
+                                    chrome.runtime.getURL('images/tooltip_off.svg') 
+                                    : chrome.runtime.getURL('images/tooltip_on.svg');
+    });
+    return button;
+}
+
+function createLinkPreviewTooltip() {
     let tooltip = null;
     let fetchTimeout = null;
 
@@ -11,6 +78,7 @@ function createLinkPreviewTooltip(document) {
             tooltip.style.cssText = `
                 position: fixed;
                 z-index: 9999;
+                width: auto;
                 max-width: ${tooltipWidth}px;
                 background: rgba(50, 46, 46, 0.85);
                 border: none;
@@ -20,6 +88,7 @@ function createLinkPreviewTooltip(document) {
                 pointer-events: none;
                 transition: opacity 0.2s;
                 opacity: 0;
+                color: white;
             `;
             document.body.appendChild(tooltip);
         }
@@ -72,6 +141,7 @@ function createLinkPreviewTooltip(document) {
     }
 
     document.addEventListener('mouseover', async (e) => {
+        if (!linkPreviewEnabled) return;
         const link = e.target.closest('[href]');
         if (!link) return;
         
@@ -85,16 +155,21 @@ function createLinkPreviewTooltip(document) {
             return;
         }
         const linkHostname = new URL(href).hostname;
-        if (linkHostname !== location.hostname) return; // Only preview same-origin for security
+        if (linkHostname !== location.hostname) {
+            showTooltip('<em>Attention! This is an external link. \nFor security reason we cannot show you what is there :(</em>', e.clientX, e.clientY);
+        } else {
+            showTooltip('<em>Loading...</em>', e.clientX, e.clientY);
+            fetchTimeout = setTimeout(async () => {
+                const previewHtml = await fetchPreview(href);
+                showTooltip(previewHtml, e.clientX, e.clientY);
+            }, 400); // Delay to avoid accidental hovers
+        }
 
-        fetchTimeout = setTimeout(async () => {
-            showTooltip('<em color="rgba(226, 226, 226, 1.00)">Loading preview...</em>', e.clientX, e.clientY);
-            const previewHtml = await fetchPreview(href);
-            showTooltip(previewHtml, e.clientX, e.clientY);
-        }, 400); // Delay to avoid accidental hovers
+        
     });
 
     document.addEventListener('mousemove', (e) => {
+        if (!linkPreviewEnabled) return;
         if (tooltip && tooltip.style.opacity === '1') {
             const tooltipWidth = 320;
             const tooltipHeight = 224;
@@ -114,8 +189,26 @@ function createLinkPreviewTooltip(document) {
     });
 
     document.addEventListener('mouseout', (e) => {
+        if (!linkPreviewEnabled) return;
         if (e.target.closest('[href]')) {
             hideTooltip();
         }
     });
+}
+
+function enableShineOnVisibleForButtons() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                if (!linkPreviewEnabled) return;
+                entry.target.classList.add('shine-on-visible');
+                // Remove the class after animation so it can be triggered again
+                entry.target.addEventListener('animationend', () => {
+                    entry.target.classList.remove('shine-on-visible');
+                }, { once: true });
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('button').forEach(btn => observer.observe(btn));
 }
