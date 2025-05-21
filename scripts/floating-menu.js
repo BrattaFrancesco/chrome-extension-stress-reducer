@@ -207,6 +207,7 @@ if (body) {
 
     // General features
     createLinkPreviewTooltip(document);
+    enableWaveOnVisibleForButtons();
 
     // Create and append buttons
     const singleParagraphHighligherButton = createSingleParagraphHighligherButton(document);
@@ -223,6 +224,9 @@ if (body) {
 
     const summarizerButton = createTextSummarizerButton(document);
     floatingMenu.appendChild(summarizerButton);
+
+    const easyNavButton = createActivateEasyNavigationButton(document);
+    floatingMenu.appendChild(easyNavButton);
     /* More buttons here
     *
     */
