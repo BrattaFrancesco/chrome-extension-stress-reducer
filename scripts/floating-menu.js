@@ -205,6 +205,9 @@ if (body) {
         }
     });
 
+    // General features
+    createLinkPreviewTooltip(document);
+
     // Create and append buttons
     const singleParagraphHighligherButton = createSingleParagraphHighligherButton(document);
     floatingMenu.appendChild(singleParagraphHighligherButton);
