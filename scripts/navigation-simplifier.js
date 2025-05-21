@@ -86,6 +86,7 @@ function createLinkPreviewTooltip(document) {
             tooltip.style.cssText = `
                 position: fixed;
                 z-index: 9999;
+                width: auto;
                 max-width: ${tooltipWidth}px;
                 background: rgba(50, 46, 46, 0.85);
                 border: none;
@@ -95,6 +96,7 @@ function createLinkPreviewTooltip(document) {
                 pointer-events: none;
                 transition: opacity 0.2s;
                 opacity: 0;
+                color: white;
             `;
             document.body.appendChild(tooltip);
         }
@@ -161,13 +163,17 @@ function createLinkPreviewTooltip(document) {
             return;
         }
         const linkHostname = new URL(href).hostname;
-        if (linkHostname !== location.hostname) return; // Only preview same-origin for security
+        if (linkHostname !== location.hostname) {
+            showTooltip('<em>Attention! This is an external link. \nFor security reason we cannot show you what is there :(</em>', e.clientX, e.clientY);
+        } else {
+            showTooltip('<em>Loading...</em>', e.clientX, e.clientY);
+            fetchTimeout = setTimeout(async () => {
+                const previewHtml = await fetchPreview(href);
+                showTooltip(previewHtml, e.clientX, e.clientY);
+            }, 400); // Delay to avoid accidental hovers
+        }
 
-        fetchTimeout = setTimeout(async () => {
-            showTooltip('<em color="rgba(226, 226, 226, 1.00)">Loading preview...</em>', e.clientX, e.clientY);
-            const previewHtml = await fetchPreview(href);
-            showTooltip(previewHtml, e.clientX, e.clientY);
-        }, 400); // Delay to avoid accidental hovers
+        
     });
 
     document.addEventListener('mousemove', (e) => {
