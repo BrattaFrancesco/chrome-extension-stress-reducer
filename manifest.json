@@ -19,6 +19,7 @@
                 "scripts/layout-simplifier.js",
                 "scripts/highlighter.js",
                 "scripts/summarizer.js",
+                "scripts/navigation-simplifier.js",
                 "scripts/floating-menu.js"
             ]
         }
