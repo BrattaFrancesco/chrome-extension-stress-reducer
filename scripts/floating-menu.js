@@ -207,7 +207,7 @@ if (body) {
 
     // General features
     createLinkPreviewTooltip(document);
-    enableWaveOnVisibleForButtons();
+    enableShineOnVisibleForButtons();
 
     // Create and append buttons
     const singleParagraphHighligherButton = createSingleParagraphHighligherButton(document);

@@ -1,36 +1,28 @@
 const style = document.createElement('style');
 style.textContent = `
-    @keyframes wave-effect {
+    @keyframes shine-effect {
         0% {
-            opacity: 0.5;
-            transform: scale(1);
-        }
-        70% {
-            opacity: 0.2;
-            transform: scale(2.2);
+            background-position: -120% 0;
         }
         100% {
-            opacity: 0;
-            transform: scale(2.8);
+            background-position: 120% 0;
         }
     }
-    .wave-on-visible {
+    .shine-on-visible {
         position: relative;
         z-index: 1;
         overflow: visible;
-    }
-    .wave-on-visible::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-        background: rgba(124, 175, 76, 0.3);
-        border-radius: 50%;
-        transform: scale(1);
-        animation: wave-effect 1.2s cubic-bezier(0.4,0,0.2,1) 1;
-        z-index: 0;
+        background: linear-gradient(
+            150deg,
+            rgba(255,255,255,0) 0%,
+            rgba(255,255,255,0.15) 25%,
+            rgb(255, 99, 71) 50%,
+            rgba(255,255,255,0.15) 75%,
+            rgba(255,255,255,0) 100%
+        );
+        background-size: 200% 100%;
+        background-repeat: no-repeat;
+        animation: shine-effect 1.5s linear 1;
     }
 `;
 document.head.appendChild(style);
@@ -73,7 +65,7 @@ function createActivateEasyNavigationButton(document){
     return button;
 }
 
-function createLinkPreviewTooltip(document) {
+function createLinkPreviewTooltip() {
     let tooltip = null;
     let fetchTimeout = null;
 
@@ -204,15 +196,15 @@ function createLinkPreviewTooltip(document) {
     });
 }
 
-function enableWaveOnVisibleForButtons() {
+function enableShineOnVisibleForButtons() {
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 if (!linkPreviewEnabled) return;
-                entry.target.classList.add('wave-on-visible');
+                entry.target.classList.add('shine-on-visible');
                 // Remove the class after animation so it can be triggered again
                 entry.target.addEventListener('animationend', () => {
-                    entry.target.classList.remove('wave-on-visible');
+                    entry.target.classList.remove('shine-on-visible');
                 }, { once: true });
             }
         });
