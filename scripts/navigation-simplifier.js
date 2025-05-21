@@ -4,14 +4,14 @@ function createLinkPreviewTooltip(document) {
 
     function showTooltip(previewHtml, x, y) {
         const tooltipWidth = 320;  // match your max-width
-        const tooltipHeight = 224; // 200px iframe + 24px padding
+        const tooltipHeight = 212; // 200px iframe + 24px padding
 
         if (!tooltip) {
             tooltip = document.createElement('div');
             tooltip.style.cssText = `
                 position: fixed;
                 z-index: 9999;
-                max-width: 320px;
+                max-width: ${tooltipWidth}px;
                 background: rgba(50, 46, 46, 0.85);
                 border: none;
                 border-radius: 8px;
@@ -53,7 +53,7 @@ function createLinkPreviewTooltip(document) {
 
     async function fetchPreview(url) {
         return `
-            <div style="width:300px; height:200px; overflow:hidden; border-radius:6px;">
+            <div style="width:auto; height:200px; overflow:hidden; border-radius:8px;">
                 <iframe 
                     src="${url}" 
                     style="
