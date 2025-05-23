@@ -27,21 +27,44 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-let linkPreviewEnabled;
-
 function restoreState() {
     const savedState = localStorage.getItem("linkPreviewEnabled") === "true";
     if(savedState){
-        linkPreviewEnabled = savedState;
+        return savedState;
     }else{
-        linkPreviewEnabled = false;
+        return false;
     }
-    console.log("savedState", savedState);
-    console.log("linkPreviewEnabled", linkPreviewEnabled);
+}
+
+function enableShineOnVisibleForButtons() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('shine-on-visible');
+                // Remove the class after animation so it can be triggered again
+                entry.target.addEventListener('animationend', () => {
+                    entry.target.classList.remove('shine-on-visible');
+                }, { once: true });
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('button').forEach(btn => observer.observe(btn));
+    return observer;
+}
+
+function disableShineOnVisibleForButtons(observer) {
+    if (observer) {
+        observer.disconnect();
+        observer = null;
+    }
+    document.querySelectorAll('button.shine-on-visible').forEach(btn => {
+        btn.classList.remove('shine-on-visible');
+    });
 }
 
 function createActivateEasyNavigationButton(document){
-    restoreState();
+    let linkPreviewEnabled = restoreState();
     // Create the button
     const button = document.createElement("button");
     button.style.cssText = `
@@ -57,8 +80,8 @@ function createActivateEasyNavigationButton(document){
     // Create the image inside the button
     const img = document.createElement("img");
     img.src = linkPreviewEnabled ? 
-                                chrome.runtime.getURL('images/tooltip_off.svg') 
-                                : chrome.runtime.getURL('images/tooltip_on.svg');
+                chrome.runtime.getURL('images/tooltip_off.svg') :
+                chrome.runtime.getURL('images/tooltip_on.svg');
     img.style.cssText = `
         width: 100%;
         height: 100%;
@@ -70,17 +93,35 @@ function createActivateEasyNavigationButton(document){
     // Append image to button
     button.appendChild(img);
 
+    let shineOnVisible = null;
+    let cleanupTooltip = null;
+
+    if (linkPreviewEnabled) {
+        shineOnVisible = enableShineOnVisibleForButtons();
+        cleanupTooltip = activateLinkPreviewTooltip();
+    }else {
+        disableShineOnVisibleForButtons(shineOnVisible);
+        if(cleanupTooltip) cleanupTooltip();
+    }
+
     button.addEventListener('click', () => {
         linkPreviewEnabled = !linkPreviewEnabled;
+        if (linkPreviewEnabled) {
+            shineOnVisible = enableShineOnVisibleForButtons();
+            cleanupTooltip = activateLinkPreviewTooltip();
+        }else {
+            disableShineOnVisibleForButtons(shineOnVisible);
+            if(cleanupTooltip) cleanupTooltip();
+        }
         localStorage.setItem("linkPreviewEnabled", linkPreviewEnabled);
         img.src = linkPreviewEnabled ? 
-                                    chrome.runtime.getURL('images/tooltip_off.svg') 
-                                    : chrome.runtime.getURL('images/tooltip_on.svg');
+                    chrome.runtime.getURL('images/tooltip_off.svg') :
+                    chrome.runtime.getURL('images/tooltip_on.svg');
     });
     return button;
 }
 
-function createLinkPreviewTooltip() {
+function activateLinkPreviewTooltip() {
     let tooltip = null;
     let fetchTimeout = null;
 
@@ -136,34 +177,34 @@ function createLinkPreviewTooltip() {
     }
 
     async function fetchPreview(url) {
-        return `
-            <div style="width:auto; height:200px; overflow:hidden; border-radius:8px;">
-                <iframe 
-                    src="${url}" 
-                    style="
-                        width:1200px; 
-                        height:800px; 
-                        border:none; 
-                        transform: scale(0.25); 
-                        transform-origin: top left; 
-                        pointer-events:none;
-                    "
-                    sandbox="allow-same-origin allow-scripts allow-forms"
-                    scrolling="no"
-                ></iframe>
-            </div>
-        `;
+        try {
+            return new Promise((resolve) => {
+                `<div style="width:auto; height:200px; overflow:hidden; border-radius:8px;">
+                    <iframe 
+                        src="${url}" 
+                        style="
+                            width:1200px; 
+                            height:800px; 
+                            border:none; 
+                            transform: scale(0.25); 
+                            transform-origin: top left; 
+                            pointer-events:none;
+                        "
+                        sandbox="allow-same-origin allow-scripts allow-forms"
+                        scrolling="no"
+                    ></iframe>
+                </div>`;
+            });
+        } catch (error) {
+            return Promise.reject(error)
+        }
     }
 
-    document.addEventListener('mouseover', async (e) => {
-        if (!linkPreviewEnabled) return;
+    function onMouseOver(e) {
         const link = e.target.closest('[href]');
         if (!link) return;
         
-        // Use URL constructor to get hostname safely
-        let href = link.getAttribute('href');
-        if (!href) return;
-        // Handle relative URLs
+        let href = link.getAttribute('href');          
         try {
             href = new URL(href, location.href).href;
         } catch {
@@ -175,16 +216,14 @@ function createLinkPreviewTooltip() {
         } else {
             showTooltip('<em>Loading...</em>', e.clientX, e.clientY);
             fetchTimeout = setTimeout(async () => {
-                const previewHtml = await fetchPreview(href);
-                showTooltip(previewHtml, e.clientX, e.clientY);
+                fetchPreview(href)
+                .then(previewHtml => showTooltip(previewHtml, e.clientX, e.clientY))
+                .catch(showTooltip('<em>Failed to load preview :(</em>', e.clientX, e.clientY));
             }, 400); // Delay to avoid accidental hovers
         }
+    }
 
-        
-    });
-
-    document.addEventListener('mousemove', (e) => {
-        if (!linkPreviewEnabled) return;
+    function onMouseMove(e) {
         if (tooltip && tooltip.style.opacity === '1') {
             const tooltipWidth = 320;
             const tooltipHeight = 224;
@@ -201,29 +240,29 @@ function createLinkPreviewTooltip() {
             tooltip.style.left = `${left}px`;
             tooltip.style.top = `${top}px`;
         }
-    });
+    }
 
-    document.addEventListener('mouseout', (e) => {
-        if (!linkPreviewEnabled) return;
+    function onMouseOut(e) {
         if (e.target.closest('[href]')) {
             hideTooltip();
         }
-    });
-}
+    }
 
-function enableShineOnVisibleForButtons() {
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                if (!linkPreviewEnabled) return;
-                entry.target.classList.add('shine-on-visible');
-                // Remove the class after animation so it can be triggered again
-                entry.target.addEventListener('animationend', () => {
-                    entry.target.classList.remove('shine-on-visible');
-                }, { once: true });
-            }
-        });
-    }, { threshold: 0.1 });
+    document.addEventListener('mouseover', onMouseOver);
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseout', onMouseOut);
 
-    document.querySelectorAll('button').forEach(btn => observer.observe(btn));
+    return function (){
+        document.removeEventListener('mouseover', onMouseOver);
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseout', onMouseOut);
+        if (tooltip) {
+            tooltip.remove();
+            tooltip = null;
+        }
+        if (fetchTimeout) {
+            clearTimeout(fetchTimeout);
+            fetchTimeout = null;
+        }
+    }
 }
