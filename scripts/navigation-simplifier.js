@@ -216,11 +216,7 @@ function activateLinkPreviewTooltip() {
                 } catch {
                     previewHtml = '<em>We have some problem loading the page :(</em>'; 
                 }
-                try {
-                    showTooltip(previewHtml, e.clientX, e.clientY);
-                } catch {
-                    showTooltip('<em>We have some problem loading the page :(</em>', e.clientX, e.clientY);
-                }
+                showTooltip(previewHtml, e.clientX, e.clientY);
             }, 400); // Delay to avoid accidental hovers
         }
     }
