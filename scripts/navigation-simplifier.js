@@ -27,9 +27,21 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-let linkPreviewEnabled = true;
+let linkPreviewEnabled;
+
+function restoreState() {
+    const savedState = localStorage.getItem("linkPreviewEnabled") === "true";
+    if(savedState){
+        linkPreviewEnabled = savedState;
+    }else{
+        linkPreviewEnabled = false;
+    }
+    console.log("savedState", savedState);
+    console.log("linkPreviewEnabled", linkPreviewEnabled);
+}
 
 function createActivateEasyNavigationButton(document){
+    restoreState();
     // Create the button
     const button = document.createElement("button");
     button.style.cssText = `
@@ -44,7 +56,9 @@ function createActivateEasyNavigationButton(document){
 
     // Create the image inside the button
     const img = document.createElement("img");
-    img.src = chrome.runtime.getURL("images/tooltip_off.svg");
+    img.src = linkPreviewEnabled ? 
+                                chrome.runtime.getURL('images/tooltip_off.svg') 
+                                : chrome.runtime.getURL('images/tooltip_on.svg');
     img.style.cssText = `
         width: 100%;
         height: 100%;
@@ -58,6 +72,7 @@ function createActivateEasyNavigationButton(document){
 
     button.addEventListener('click', () => {
         linkPreviewEnabled = !linkPreviewEnabled;
+        localStorage.setItem("linkPreviewEnabled", linkPreviewEnabled);
         img.src = linkPreviewEnabled ? 
                                     chrome.runtime.getURL('images/tooltip_off.svg') 
                                     : chrome.runtime.getURL('images/tooltip_on.svg');
