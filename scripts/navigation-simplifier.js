@@ -177,9 +177,7 @@ function activateLinkPreviewTooltip() {
     }
 
     async function fetchPreview(url) {
-        try {
-            return new Promise((resolve) => {
-                `<div style="width:auto; height:200px; overflow:hidden; border-radius:8px;">
+        return `<div style="width:auto; height:200px; overflow:hidden; border-radius:8px;">
                     <iframe 
                         src="${url}" 
                         style="
@@ -194,10 +192,6 @@ function activateLinkPreviewTooltip() {
                         scrolling="no"
                     ></iframe>
                 </div>`;
-            });
-        } catch (error) {
-            return Promise.reject(error)
-        }
     }
 
     function onMouseOver(e) {
@@ -216,9 +210,17 @@ function activateLinkPreviewTooltip() {
         } else {
             showTooltip('<em>Loading...</em>', e.clientX, e.clientY);
             fetchTimeout = setTimeout(async () => {
-                fetchPreview(href)
-                .then(previewHtml => showTooltip(previewHtml, e.clientX, e.clientY))
-                .catch(showTooltip('<em>Failed to load preview :(</em>', e.clientX, e.clientY));
+                let previewHtml;
+                try {
+                    previewHtml = await fetchPreview(href);
+                } catch {
+                    previewHtml = '<em>We have some problem loading the page :(</em>'; 
+                }
+                try {
+                    showTooltip(previewHtml, e.clientX, e.clientY);
+                } catch {
+                    showTooltip('<em>We have some problem loading the page :(</em>', e.clientX, e.clientY);
+                }
             }, 400); // Delay to avoid accidental hovers
         }
     }
