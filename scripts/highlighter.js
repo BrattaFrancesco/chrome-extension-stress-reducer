@@ -43,6 +43,7 @@ function highlightHtml(el, wordsToHighlight){
 function createSingleParagraphHighligherButton(document){
     // Create the button
     const button = document.createElement("button");
+    button.title = "Highlight one paragraph at a time";
     button.style.cssText = `
         width: 38px;
         height: 38px;
@@ -144,6 +145,7 @@ function createSingleParagraphHighligherButton(document){
 function createAllParagraphHighlighterButton(document){
     // Create the button
     const button = document.createElement("button");
+    button.title = "Highlight all paragraphs at once";
     button.style.cssText = `
         width: 38px;
         height: 38px;

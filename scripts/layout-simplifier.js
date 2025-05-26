@@ -1,6 +1,7 @@
 function createRemoveElementsButton(document){
     // Create the button
     const button = document.createElement("button");
+    button.title = "Remove elements from the page";
     button.style.cssText = `
         width: 38px;
         height: 38px;
@@ -131,6 +132,7 @@ function createRemoveElementsButton(document){
 function createHideElementsButton(document){
     // Create the button
     const button = document.createElement("button");
+    button.title = "Hide elements from the page";
     button.style.cssText = `
         width: 38px;
         height: 38px;
