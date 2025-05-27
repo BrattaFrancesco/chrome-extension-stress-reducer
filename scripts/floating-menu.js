@@ -1,3 +1,23 @@
+// Listen for enable/disable messages from the background script
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.type === "TOGGLE_EXTENSION") {
+        if (message.enabled) {
+            // ...enable features as needed
+        } else {
+            // ...disable features as needed
+        }
+    }
+});
+
+// On load, check state and enable/disable accordingly
+chrome.storage.local.get({ extensionEnabled: true }, ({ extensionEnabled }) => {
+    if (extensionEnabled) {
+        // ...enable features as needed
+    } else {
+        // ...disable features as needed
+    }
+});
+
 function restorePosition(element){
     const savedPosition = JSON.parse(localStorage.getItem("floatingMenuPosition"));
     if (savedPosition) {
