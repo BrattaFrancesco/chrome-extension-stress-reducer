@@ -4,7 +4,16 @@
     "version" : "1.0",
     "description": "Reduce stress during web browsing for individuals with neurodivergent conditions and cognitive disabilities",
 
-    "icons": {
+    "background": {
+        "service_worker": "scripts/background.js"
+    },
+
+    "action": {
+        "default_icon": {
+        "16": "images/toggle_on_16.svg",
+        "32": "images/toggle_on_32.svg"
+        },
+        "default_title": "Toggle Stress Reducer"
     },
 
     "declarative_net_request": {
@@ -17,7 +26,12 @@
         ]
     },
     
-    "permissions": ["declarativeNetRequest"],
+    "permissions": [
+        "declarativeNetRequest",
+        "storage",
+        "scripting",
+        "activeTab"
+    ],
 
     "content_scripts": [
         {
