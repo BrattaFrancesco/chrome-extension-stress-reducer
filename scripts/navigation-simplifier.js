@@ -174,7 +174,7 @@ function createActivateEasyNavigationButton(document){
     let linkPreviewEnabled = restoreState();
     // Create the button
     const button = document.createElement("button");
-    button.title = "Activate/Deactivate preview of links";
+    button.title = "Activate/Deactivate easy navigation";
     button.style.cssText = `
         width: 38px;
         height: 38px;
