@@ -1,32 +1,3 @@
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes shine-effect {
-        0% {
-            background-position: -120% 0;
-        }
-        100% {
-            background-position: 120% 0;
-        }
-    }
-    .shine-on-visible {
-        position: relative;
-        z-index: 1;
-        overflow: visible;
-        background: linear-gradient(
-            150deg,
-            rgba(255,255,255,0) 0%,
-            rgba(255,255,255,0.15) 25%,
-            rgb(255, 99, 71) 50%,
-            rgba(255,255,255,0.15) 75%,
-            rgba(255,255,255,0) 100%
-        );
-        background-size: 200% 100%;
-        background-repeat: no-repeat;
-        animation: shine-effect 1.5s linear 1;
-    }
-`;
-document.head.appendChild(style);
-
 function restoreState() {
     const savedState = localStorage.getItem("linkPreviewEnabled") === "true";
     if(savedState){
@@ -36,90 +7,23 @@ function restoreState() {
     }
 }
 
-function enableShineOnVisibleForButtons() {
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('shine-on-visible');
-                // Remove the class after animation so it can be triggered again
-                entry.target.addEventListener('animationend', () => {
-                    entry.target.classList.remove('shine-on-visible');
-                }, { once: true });
-            }
-        });
-    }, { threshold: 0.1 });
-
-    document.querySelectorAll('button').forEach(btn => observer.observe(btn));
-    return observer;
-}
-
-function disableShineOnVisibleForButtons(observer) {
-    if (observer) {
-        observer.disconnect();
-        observer = null;
-    }
-    document.querySelectorAll('button.shine-on-visible').forEach(btn => {
-        btn.classList.remove('shine-on-visible');
-    });
-}
-
-function createActivateEasyNavigationButton(document){
-    let linkPreviewEnabled = restoreState();
-    // Create the button
-    const button = document.createElement("button");
-    button.title = "Activate/Deactivate preview of links";
-    button.style.cssText = `
-        width: 38px;
-        height: 38px;
-        background-color: rgba(226, 226, 226, 1.00);
-        padding: 8;
-        border-radius: 100px;
-        border: none;
-        cursor: pointer;
-    `;
-
-    // Create the image inside the button
-    const img = document.createElement("img");
-    img.src = linkPreviewEnabled ? 
-                chrome.runtime.getURL('images/tooltip_off.svg') :
-                chrome.runtime.getURL('images/tooltip_on.svg');
-    img.style.cssText = `
-        width: 100%;
-        height: 100%;
-        objectFit: contain;
-    `;
-    img.addEventListener('dragstart', e => e.preventDefault());
-    img.alt = "icon";
-
-    // Append image to button
-    button.appendChild(img);
-
-    let shineOnVisible = null;
-    let cleanupTooltip = null;
-
-    if (linkPreviewEnabled) {
-        shineOnVisible = enableShineOnVisibleForButtons();
-        cleanupTooltip = activateLinkPreviewTooltip();
-    }else {
-        disableShineOnVisibleForButtons(shineOnVisible);
-        if(cleanupTooltip) cleanupTooltip();
-    }
-
-    button.addEventListener('click', () => {
-        linkPreviewEnabled = !linkPreviewEnabled;
-        if (linkPreviewEnabled) {
-            shineOnVisible = enableShineOnVisibleForButtons();
-            cleanupTooltip = activateLinkPreviewTooltip();
-        }else {
-            disableShineOnVisibleForButtons(shineOnVisible);
-            if(cleanupTooltip) cleanupTooltip();
+function highlightButtons() {
+    const originalBackgrounds = new WeakMap();
+    document.querySelectorAll('button, a').forEach(btn => {
+        if(!originalBackgrounds.has(btn)) {
+            originalBackgrounds.set(btn, btn.style.backgroundColor);
         }
-        localStorage.setItem("linkPreviewEnabled", linkPreviewEnabled);
-        img.src = linkPreviewEnabled ? 
-                    chrome.runtime.getURL('images/tooltip_off.svg') :
-                    chrome.runtime.getURL('images/tooltip_on.svg');
+        btn.style.backgroundColor = 'rgba(172, 255, 47, 0.5)';
     });
-    return button;
+    return originalBackgrounds;
+}
+
+function resetButtonBackground(originalBackgrounds) {
+    document.querySelectorAll('button, a').forEach(btn => {
+        if(originalBackgrounds && originalBackgrounds.has(btn)){
+            btn.style.backgroundColor = originalBackgrounds.get(btn) || '';
+        }
+    });
 }
 
 function activateLinkPreviewTooltip() {
@@ -264,4 +168,63 @@ function activateLinkPreviewTooltip() {
             fetchTimeout = null;
         }
     }
+}
+
+function createActivateEasyNavigationButton(document){
+    let linkPreviewEnabled = restoreState();
+    // Create the button
+    const button = document.createElement("button");
+    button.title = "Activate/Deactivate preview of links";
+    button.style.cssText = `
+        width: 38px;
+        height: 38px;
+        background-color: rgba(226, 226, 226, 1.00);
+        padding: 8;
+        border-radius: 100px;
+        border: none;
+        cursor: pointer;
+    `;
+
+    // Create the image inside the button
+    const img = document.createElement("img");
+    img.src = linkPreviewEnabled ? 
+                chrome.runtime.getURL('images/tooltip_off.svg') :
+                chrome.runtime.getURL('images/tooltip_on.svg');
+    img.style.cssText = `
+        width: 100%;
+        height: 100%;
+        objectFit: contain;
+    `;
+    img.addEventListener('dragstart', e => e.preventDefault());
+    img.alt = "icon";
+
+    // Append image to button
+    button.appendChild(img);
+
+    let originalBackgrounds = null;
+    let cleanupTooltip = null;
+
+    if (linkPreviewEnabled) {
+        originalBackgrounds = highlightButtons();
+        cleanupTooltip = activateLinkPreviewTooltip();
+    }else {
+        resetButtonBackground(originalBackgrounds);
+        if(cleanupTooltip) cleanupTooltip();
+    }
+
+    button.addEventListener('click', () => {
+        linkPreviewEnabled = !linkPreviewEnabled;
+        if (linkPreviewEnabled) {
+            originalBackgrounds = highlightButtons();
+            cleanupTooltip = activateLinkPreviewTooltip();
+        }else {
+            resetButtonBackground(originalBackgrounds);
+            if(cleanupTooltip) cleanupTooltip();
+        }
+        localStorage.setItem("linkPreviewEnabled", linkPreviewEnabled);
+        img.src = linkPreviewEnabled ? 
+                    chrome.runtime.getURL('images/tooltip_off.svg') :
+                    chrome.runtime.getURL('images/tooltip_on.svg');
+    });
+    return button;
 }
