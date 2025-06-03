@@ -6,7 +6,19 @@
 
     "icons": {
     },
+
+    "declarative_net_request": {
+        "rule_resources": [
+        {
+            "id": "ruleset_1",
+            "enabled": true,
+            "path": "ad_filters/block_rules.json"
+        }
+        ]
+    },
     
+    "permissions": ["declarativeNetRequest"],
+
     "content_scripts": [
         {
             "matches": [
@@ -19,6 +31,7 @@
                 "scripts/layout-simplifier.js",
                 "scripts/highlighter.js",
                 "scripts/summarizer.js",
+                "scripts/navigation-simplifier.js",
                 "scripts/floating-menu.js"
             ]
         }

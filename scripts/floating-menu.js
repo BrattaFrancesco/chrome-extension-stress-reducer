@@ -50,33 +50,6 @@ function createControlsContainer(document, floatingMenu){
     dragHandle.appendChild(dragImg);
     controlsContainer.appendChild(dragHandle);
 
-    /* // Reset button
-    const resetButton = document.createElement("button");
-    resetButton.style.cssText = `
-        width: 100%;
-        height: 100%;
-        cursor: pointer;
-        background: transparent;
-        border: none;
-    `;
-    const resetImg = document.createElement("img");
-    resetImg.src = chrome.runtime.getURL("images/settings_backup_restore_white.svg");
-    resetImg.style.cssText = `
-        width: 100%;
-        height: 100%;
-        objectFit: contain;
-    `;
-    resetImg.alt = 'icon';
-    resetButton.appendChild(resetImg);
-
-    resetButton.addEventListener("click", () => {
-        localStorage.removeItem("floatingMenuPosition");
-        floatingMenu.style.left = "50%";
-        floatingMenu.style.transform = "translateX(-50%)";
-        floatingMenu.style.flexDirection = "row";
-    });
-    controlsContainer.appendChild(resetButton); */
-
     // Drag logic (attached only to the drag handle)
     let isDragging = false;
     let offsetX, offsetY;
@@ -220,6 +193,9 @@ if (body) {
 
     const summarizerButton = createTextSummarizerButton(document);
     floatingMenu.appendChild(summarizerButton);
+
+    const easyNavButton = createActivateEasyNavigationButton(document);
+    floatingMenu.appendChild(easyNavButton);
     /* More buttons here
     *
     */

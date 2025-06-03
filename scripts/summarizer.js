@@ -1,6 +1,7 @@
 function createTextSummarizerButton(document){
     // Create the button
     const button = document.createElement("button");
+    button.title = "Summarize paragraph";
     button.style.cssText = `
         width: 38px;
         height: 38px;
